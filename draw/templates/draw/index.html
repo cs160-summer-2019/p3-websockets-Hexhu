@@ -16,20 +16,80 @@
 </head>
 <body>
     <!-- You may change the dimensions of this canvas -->
-    <canvas id="myCanvas" width="750px" height="750px"></canvas>
+    <canvas id="myCanvas" width="1080px" height="1080px" style="border:1px solid black;"></canvas>
 </body>
 <script>
+  // getting the URL (you may want to use for Exercise 3)
+  var url = window.location.href;
+  console.log(url);
+  wssurl = url.replace("https", "wss");
+  wssurl = wssurl.replace("http", "ws");
+  wssurl = wssurl.replace("draw/", "ws\/draw");
+  console.log(wssurl);
 
-    // setting up the canvas and one paper tool
-    var canvas = document.getElementById('myCanvas');
-    paper.setup(canvas);
-    var tool = new paper.Tool();
+  // setting up the canvas and one paper tool
+  var canvas = document.getElementById('myCanvas');
+  var tool = new paper.Tool();
+  var myPath;
+  var myStrokeColor = paper.Color.random();
+  var socket = new WebSocket(wssurl);
+  var myClientID = Math.random();
+  var pathsArr = {}
 
-    // getting the URL (you may want to use for Exercise 3)
-    var url = window.location.href;
+  // notify console if socket closes unexpectedly
+  socket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+  };
 
-    // var socket = new WebSocket(
-    //     'wss://<your url here>/ws/draw');
+  window.onload = function() {
+    console.log("Loaded!");
+    init();
+
+    socket.onmessage = function(receivedMessage) {
+      //console.log(receivedMessage.data);
+      msg = JSON.parse(receivedMessage.data)
+      sender = msg["sender"];
+      if (sender != myClientID) {
+        newPath = msg["newPath"];
+        if (newPath === 'true') {
+          console.log("!");
+          pathsArr[sender] = new paper.Path();
+          console.log(msg["newPathColor"]);
+          
+          pathsArr[sender].strokeWidth = 7; // Hard-coded
+          pathsArr[sender].strokeColor = new paper.Color(msg["newPathColor"]);
+          //console.log(msg["pointX"] + "x" + msg["pointY"]);
+        }
+        //console.log(msg["pointX"] + "x" + msg["pointY"]);
+        newPt = new paper.Point([msg["pointX"], msg["pointY"]], 10);
+        //console.log(newPt)
+        pathsArr[sender].add(newPt);
+        //console.log(pathsArr[sender])
+        //paper.view.draw();
+      }
+    };
+
+    function init() {
+      paper.setup(canvas);
+
+      tool.onMouseDown = function (event) {
+        myPath = new paper.Path();
+        myPath.strokeWidth = 7; // Hard-coded
+        myPath.strokeColor = myStrokeColor;
+        myPath.add(event.point);
+        marshaledJSON = '{"sender": "' + myClientID + '", "newPath": "' + true + '", "newPathColor": "' + myPath.strokeColor.toCSS() +'", "pointX": "' + event.point.x + '", "pointY": "' + event.point.y + '"}';
+        socket.send(marshaledJSON);
+      }
+      tool.onMouseDrag = function (event) {
+        pt = event.point;
+        myPath.add(pt);
+        //console.log(myPath)
+        marshaledJSON = '{"sender": "' + myClientID + '", "newPath": "' + false + '", "pointX": "' + event.point.x + '", "pointY": "' + event.point.y + '"}';
+        socket.send(marshaledJSON);
+      }
+      //console.log("Canvas initialized");
+    }
+  }
 
 
 </script>
