@@ -34,7 +34,9 @@
   var myStrokeColor = paper.Color.random();
   var socket = new WebSocket(wssurl);
   var myClientID = Math.random();
+  var screenSize = new URL(url).searchParams.get("size");
   var pathsArr = {}
+  //if (screenSize === null) console.log("yeah");
 
   // notify console if socket closes unexpectedly
   socket.onclose = function(e) {
@@ -45,29 +47,30 @@
     console.log("Loaded!");
     init();
 
-    socket.onmessage = function(receivedMessage) {
-      //console.log(receivedMessage.data);
-      msg = JSON.parse(receivedMessage.data)
-      sender = msg["sender"];
-      if (sender != myClientID) {
-        newPath = msg["newPath"];
-        if (newPath === 'true') {
-          console.log("!");
-          pathsArr[sender] = new paper.Path();
-          console.log(msg["newPathColor"]);
-          
-          pathsArr[sender].strokeWidth = 7; // Hard-coded
-          pathsArr[sender].strokeColor = new paper.Color(msg["newPathColor"]);
+    if (screenSize === 'large') 
+      socket.onmessage = function(receivedMessage) {
+        //console.log(receivedMessage.data);
+        msg = JSON.parse(receivedMessage.data)
+        sender = msg["sender"];
+        if (sender != myClientID) {
+          newPath = msg["newPath"];
+          if (newPath === 'true') {
+            console.log("!");
+            pathsArr[sender] = new paper.Path();
+            console.log(msg["newPathColor"]);
+            
+            pathsArr[sender].strokeWidth = 7; // Hard-coded
+            pathsArr[sender].strokeColor = new paper.Color(msg["newPathColor"]);
+            //console.log(msg["pointX"] + "x" + msg["pointY"]);
+          }
           //console.log(msg["pointX"] + "x" + msg["pointY"]);
+          newPt = new paper.Point([msg["pointX"], msg["pointY"]], 10);
+          //console.log(newPt)
+          pathsArr[sender].add(newPt);
+          //console.log(pathsArr[sender])
+          //paper.view.draw();
         }
-        //console.log(msg["pointX"] + "x" + msg["pointY"]);
-        newPt = new paper.Point([msg["pointX"], msg["pointY"]], 10);
-        //console.log(newPt)
-        pathsArr[sender].add(newPt);
-        //console.log(pathsArr[sender])
-        //paper.view.draw();
-      }
-    };
+      };
 
     function init() {
       paper.setup(canvas);
