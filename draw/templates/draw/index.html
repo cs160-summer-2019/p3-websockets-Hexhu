@@ -21,13 +21,32 @@
     <!-- To be filled with availability-calendar-col, one for each user. -->
   </div>
   <div class="arrival-status-row"> 
-    Click here to update the arrival status, or change the available time.
+    Click here to update the arrival status, or change the available time. <br />
+    <form name="arrival_status_form" action="javascript:handleArrStatusUpdate()">
+      When are you available? (two number between 8~20 -> 8am~8pm) <br />
+      <input type="number" name="start_time" value="8">
+      <input type="number" name="end_time" value="20">
+      <br />
+      <br />
+      What's your arrival status? Have you arrived or are you stil coming? <br />
+      <input type="text" name="arrival status" value="OnMyWay!">
+      <br>
+      <input type="submit" value="Submit">
+    </form>
   </div>
   <div class="ideas-row"> 
     Ideas: vote for where to eat.
+    <form>
+      <input type="text" width=100px height=200px></input>
+      <input type="submit" value="Submit">
+    </form>
   </div>
   <div class="chat-row"> 
     Chat here.
+    <form>
+      <input type="text" width=100px height=200px></input>
+      <input type="submit" value="Submit">
+    </form>
   </div>
 </body>
 </html>

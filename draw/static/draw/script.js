@@ -77,9 +77,16 @@ window.onload = function() {
   }
 
   function addParticipant(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
+    // If invalid time range, swap.
+    if (start_time > end_time) {
+      start_time = start_time + end_time;
+      end_time = start_time - end_time;
+      start_time = start_time - end_time;
+    }
     let p_cont = document.createElement("div");
     p_cont.className = "participant-container";
     p_cont.id = userid;
+    p_cont.onclick = function () {toggleArrivalStatusFieldVisibility()};
     /* Insert the newly created col into the big calendar/container. */
 
     let profile = document.createElement("div");
@@ -115,6 +122,20 @@ window.onload = function() {
     let c = p_cont.childNodes;
     for (i = 0; i < c.length; i++)
       console.log(userid + ": " + c[i].className);
+  }
+
+  function toggleArrivalStatusFieldVisibility() {
+    let x = document.getElementsByClassName('arrival-status-row')[0];
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+
+  // Called when submitting forms
+  function handleArrStatusUpdate(content) {
+    console.log(content);
   }
 
 }
