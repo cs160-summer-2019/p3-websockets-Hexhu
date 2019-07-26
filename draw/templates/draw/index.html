@@ -16,20 +16,22 @@
 
 <body>
   <div class="title-bar">NAME OF EVENT</div>
-  <div class="event-description-col">Event description here.</div>
+  <div class="event-description-col">Event description here. <br /> Date: Jul 26th</div>
   <div class="calendar-container"> 
     <!-- To be filled with availability-calendar-col, one for each user. -->
   </div>
   <div class="arrival-status-row"> 
     Click here to update the arrival status, or change the available time. <br />
     <form name="arrival_status_form" action="javascript:handleArrStatusUpdate()">
-      When are you available? (two number between 8~20 -> 8am~8pm) <br />
-      <input type="number" name="start_time" value="8">
-      <input type="number" name="end_time" value="20">
+      What's your name? <br />
+      <input type="text" name="username" placeholder="Your name please :)"> <br />
+      When will you be available? (two number between 8~20 -> 8am~8pm) <br />
+      From <input type="number" name="start_time" value="8">
+      to <input type="number" name="end_time" value="20">
       <br />
       <br />
       What's your arrival status? Have you arrived or are you stil coming? <br />
-      <input type="text" name="arrival status" value="OnMyWay!">
+      <input type="text" name="arrival_status" placeholder="OnMyWay!">
       <br>
       <input type="submit" value="Submit">
     </form>

@@ -133,9 +133,9 @@ window.onload = function() {
     }
   }
 
-  // Called when submitting forms
-  function handleArrStatusUpdate(content) {
-    console.log(content);
-  }
+}
 
+// Called when submitting forms
+function handleArrStatusUpdate(content) {
+  console.log(content);
 }
