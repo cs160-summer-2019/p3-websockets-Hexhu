@@ -138,4 +138,7 @@ window.onload = function() {
 // Called when submitting forms
 function handleArrStatusUpdate(content) {
   console.log(content);
+  for (i = 0; i < 2; i++) {
+    addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5));
+  }
 }
