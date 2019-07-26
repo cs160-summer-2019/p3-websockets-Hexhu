@@ -8,15 +8,15 @@ console.log(wssurl);
 // setting up the canvas and one paper tool
 var aval_col;
 var event_desc_col
-var ws = null; //new WebSocket(wssurl);
+var ws = new WebSocket(wssurl);
 var myClientID = Math.random();
 var timeStampArr = []; // A list of timestamps, cursed.
 var dataDict = {}; // For now it stores everything, indexed by timestamps. Cursed :(.
 
 // notify console if socket closes unexpectedly
-/*ws.onclose = function(e) {
+ws.onclose = function(e) {
     console.error('Chat socket closed unexpectedly');
-};*/
+};
 
 window.onload = function() {
   console.log("Loaded!");
@@ -27,20 +27,20 @@ window.onload = function() {
   console.log(cal_container_height);
   init();
 
-  /*ws.onmessage = function(receivedMessage) {
+  ws.onmessage = function(receivedMessage) {
     //console.log(receivedMessage.data);
     msg = JSON.parse(receivedMessage.data)
     sender = msg["sender"];
     if (sender != myClientID) {
       newPath = msg["newPath"];
     }
-  };*/
+  };
 
   function init() {
     console.log("?");
-    /* Add a participant named Xu who is available from 11am to 5pm. */
+    addParticipant("CLICK ME", null, 9, 18);
     for (i = 0; i < 20; i++) {
-      addParticipant("Person#" + i, null, 8+getRandomInt(5), 20-getRandomInt(5));
+      addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5));
     }
   }
 
