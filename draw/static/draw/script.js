@@ -72,50 +72,6 @@ window.onload = function() {
     }*/
   }
 
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-  }
-
-  function addParticipant(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
-    // If invalid time range, swap.
-    if (start_time > end_time) {
-      start_time = start_time + end_time;
-      end_time = start_time - end_time;
-      start_time = start_time - end_time;
-    }
-    let p_cont = document.createElement("div");
-    p_cont.className = "participant-container";
-    p_cont.id = userid;
-    p_cont.onclick = function () {toggleArrivalStatusFieldVisibility()};
-    /* Insert the newly created col into the big calendar/container. */
-
-    let profile = document.createElement("div");
-    profile.className = "profile";
-    profile.innerHTML = username;
-
-    let cal_col = document.createElement("div");
-    cal_col.className = "availability-calendar-col";
-
-    let time_span = document.createElement("div");
-    time_span.className = "time_span";
-    start_height = cal_container_height * (start_time - 8) / 12; // Assume it's 3hr / (8am~8pm) -> starts at 11am
-    height = cal_container_height * (end_time - start_time) / 12; // 8am+6hr = 2pm
-    bg_color = '#F4A7B9';
-    time_span.style.cssText = 'margin-top:' + start_height + 'px;background:' + bg_color + ';height:' + height + 'px;'
-
-    aval_container.appendChild(p_cont);
-      p_cont.appendChild(profile);
-      p_cont.appendChild(cal_col);
-        cal_col.appendChild(time_span);
-    
-    if (notifyOthers) {
-      let type = 'arrival_status'
-      let action = 'update'
-      let layload = [username, avatar, start_time, end_time]
-      let marshaledJSON = '{"sender": "' + userid + '", "timestamp": "' + Math.floor(Date.now() / 1000) + '", "type": "' + type +'", "action": "' + action + '", "payload": "' + layload + '", "data_dict": "' + data_dict + '"}';
-      ws.send(marshaledJSON);
-    }
-  }
 
   function updateParticipantInfo(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
     let p_cont = document.getElementById(userid);
@@ -135,10 +91,55 @@ window.onload = function() {
 
 }
 
+function addParticipant(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
+  // If invalid time range, swap.
+  if (start_time > end_time) {
+    start_time = start_time + end_time;
+    end_time = start_time - end_time;
+    start_time = start_time - end_time;
+  }
+  let p_cont = document.createElement("div");
+  p_cont.className = "participant-container";
+  p_cont.id = userid;
+  p_cont.onclick = function () {toggleArrivalStatusFieldVisibility()};
+  /* Insert the newly created col into the big calendar/container. */
+
+  let profile = document.createElement("div");
+  profile.className = "profile";
+  profile.innerHTML = username;
+
+  let cal_col = document.createElement("div");
+  cal_col.className = "availability-calendar-col";
+
+  let time_span = document.createElement("div");
+  time_span.className = "time_span";
+  start_height = cal_container_height * (start_time - 8) / 12; // Assume it's 3hr / (8am~8pm) -> starts at 11am
+  height = cal_container_height * (end_time - start_time) / 12; // 8am+6hr = 2pm
+  bg_color = '#F4A7B9';
+  time_span.style.cssText = 'margin-top:' + start_height + 'px;background:' + bg_color + ';height:' + height + 'px;'
+
+  aval_container.appendChild(p_cont);
+    p_cont.appendChild(profile);
+    p_cont.appendChild(cal_col);
+      cal_col.appendChild(time_span);
+  
+  if (notifyOthers) {
+    let type = 'arrival_status'
+    let action = 'update'
+    let layload = [username, avatar, start_time, end_time]
+    let marshaledJSON = '{"sender": "' + userid + '", "timestamp": "' + Math.floor(Date.now() / 1000) + '", "type": "' + type +'", "action": "' + action + '", "payload": "' + layload + '", "data_dict": "' + data_dict + '"}';
+    ws.send(marshaledJSON);
+  }
+}
+
 // Called when submitting forms
 function handleArrStatusUpdate(content) {
   console.log(content);
   for (i = 0; i < 2; i++) {
-    addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5));
+    addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5), notifyOthers=true);
   }
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
