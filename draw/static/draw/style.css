@@ -1,0 +1,97 @@
+body {
+    background-color: white;
+}
+
+/* The title bar in the top. */
+.title-bar {
+    display: block;
+    width: 1000px;
+    height: 30px;
+    background-color: white;
+}
+
+/* The description row on the left of the calendar section. */
+.event-description-col {
+    float: left;
+    width: 200px;
+    height: 600px;
+}
+
+/* #TODO add timeline. */
+
+/* Contains a row of participant-containers. */
+.calendar-container {
+    display: block;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border: inset;
+    width: 800px;
+    height: 600px;
+}
+.calendar-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Wraps an avtar-pic and an availability-calendar-col. */
+.participant-container {
+    display: inline-block;
+    width: 80px;
+    height: 600px;
+}
+
+/* A temporary replacement for avatars. */
+/* #TODO */
+
+/* Contains an avatar and a username.
+   Should crop the picture to a circle of diameter 45px.*/
+.profile {
+    display: block;
+    border: inset;
+    background-color:#ede7f6;
+    /* NONE WORKS on LOOOOOOG names, CSS sucks! */
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+
+    width: 80px;
+    height: 80px;
+}
+
+/* A row that represents a participant's availability.cContains time-span. */
+.availability-calendar-col {
+    display: inline-block;
+    border: gray;
+    background-color:white;
+    width: 80px;
+    height: 555px;
+}
+
+/* A row of buttons. */
+.arrival-status-row {
+    display: block;
+    border: inset;
+    width: 1000px;
+    height: 100px;
+}
+
+/* The ideas section. */
+.ideas-row {
+    display: block;
+    width: 1000px;
+    height: 200px;
+}
+
+/* The chat section. */
+.chat-row {
+    display: block;
+    float: left;
+    width: 1000px;
+    height: 200px;
+}

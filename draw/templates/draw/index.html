@@ -4,142 +4,30 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>P4 Drawing</title>
+	  <title> Never Stand You UP </title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
     <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
 
-    <style type="text/css">
-    </style>
-
+    <link rel="stylesheet" type="text/css" href="{% static 'draw/style.css' %}" />
+    <script src="{% static 'draw/script.js' %}"></script>
 </head>
+
 <body>
-    <!-- You may change the dimensions of this canvas -->
-    <canvas id="myCanvas" width="1080px" height="1080px" style="border:1px solid black;"></canvas>
-    <br />
-    <div id="gamma" style="border:1px solid black; float: right;"></div>
-    <br />
-    <div id="acc" style="border:1px solid black; float: right;"></div>
+  <div class="title-bar">NAME OF EVENT</div>
+  <div class="event-description-col">Event description here.</div>
+  <div class="calendar-container"> 
+    <!-- To be filled with availability-calendar-col, one for each user. -->
+  </div>
+  <div class="arrival-status-row"> 
+    Click here to update the arrival status, or change the available time.
+  </div>
+  <div class="ideas-row"> 
+    Ideas: vote for where to eat.
+  </div>
+  <div class="chat-row"> 
+    Chat here.
+  </div>
 </body>
-<script>
-  // getting the URL (you may want to use for Exercise 3)
-  var url = window.location.href;
-  console.log(url);
-  wssurl = url.replace("https", "wss");
-  wssurl = wssurl.replace("http", "ws");
-  wssurl = wssurl.replace("draw/", "ws\/draw");
-  console.log(wssurl);
-
-  // setting up the canvas and one paper tool
-  var canvas = document.getElementById('myCanvas');
-  var tool = new paper.Tool();
-  var myPath;
-  var myStrokeColor = paper.Color.random();
-  var socket = new WebSocket(wssurl);
-  var myClientID = Math.random();
-  var screenSize = new URL(url).searchParams.get("size");
-  var pathsArr = {};
-  var shakeThreshold = 20; // Shake sensitivity (a lower number is more).
-  var rightTippingThreshold = 20; 
-  // Position variables
-  var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0, gamma = 0;
-  //if (screenSize === null) console.log("yeah");
-
-  // notify console if socket closes unexpectedly
-  socket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-  };
-
-  // For gestures
-  window.addEventListener('deviceorientation', (event) => {
-    //console.log("Gamma: " + event.gamma);
-    if (event.gamma != 'undefined')
-      gamma = event.gamma;
-  });
-
-  // Borrowed from https://gist.github.com/minwe/9887001: minwe/shake.event.js
-  // Listen to motion events and update the position
-  window.addEventListener('devicemotion', (e) => {
-    console.log("Acc: " + e.acceleration.x);
-    x1 = e.acceleration.x;
-    y1 = e.acceleration.y;
-    z1 = e.acceleration.z;
-  });
-
-  // Periodically check the position and fire
-  // if the change is greater than the sensitivity/shakeThreshold
-  setInterval(function () {
-    // For tipping
-    document.getElementById("gamma").innerHTML = "Gamma: " + gamma;
-    if (gamma > rightTippingThreshold) {
-      myStrokeColor = paper.Color.random();
-      //alert("Device tipped to the right.")
-    }
-
-    // For shaking
-    var change = Math.abs(x1-x2+y1-y2+z1-z2);
-    document.getElementById("acc").innerHTML = "Acc change: " + change;
-    if (change > shakeThreshold) {
-      paper.project.activeLayer.removeChildren();
-      paper.view.draw();
-      //alert('Shake!');
-    }
-    // Update new position
-    x2 = x1;
-    y2 = y1;
-    z2 = z1;
-  }, 150);
-
-  window.onload = function() {
-    console.log("Loaded!");
-    init();
-
-    if (screenSize != 'small') 
-      socket.onmessage = function(receivedMessage) {
-        //console.log(receivedMessage.data);
-        msg = JSON.parse(receivedMessage.data)
-        sender = msg["sender"];
-        if (sender != myClientID) {
-          newPath = msg["newPath"];
-          if (newPath === 'true') {
-            console.log("!");
-            pathsArr[sender] = new paper.Path();
-            console.log(msg["newPathColor"]);
-            
-            pathsArr[sender].strokeWidth = 7; // Hard-coded
-            pathsArr[sender].strokeColor = new paper.Color(msg["newPathColor"]);
-            //console.log(msg["pointX"] + "x" + msg["pointY"]);
-          }
-          //console.log(msg["pointX"] + "x" + msg["pointY"]);
-          newPt = new paper.Point([msg["pointX"], msg["pointY"]], 10);
-          //console.log(newPt)
-          pathsArr[sender].add(newPt);
-          //console.log(pathsArr[sender])
-          //paper.view.draw();
-        }
-      };
-
-    function init() {
-      paper.setup(canvas);
-
-      tool.onMouseDown = function (event) {
-        myPath = new paper.Path();
-        myPath.strokeWidth = 7; // Hard-coded
-        myPath.strokeColor = myStrokeColor;
-        myPath.add(event.point);
-        marshaledJSON = '{"sender": "' + myClientID + '", "newPath": "' + true + '", "newPathColor": "' + myPath.strokeColor.toCSS() +'", "pointX": "' + event.point.x + '", "pointY": "' + event.point.y + '"}';
-        socket.send(marshaledJSON);
-      }
-      tool.onMouseDrag = function (event) {
-        pt = event.point;
-        myPath.add(pt);
-        //console.log(myPath)
-        marshaledJSON = '{"sender": "' + myClientID + '", "newPath": "' + false + '", "pointX": "' + event.point.x + '", "pointY": "' + event.point.y + '"}';
-        socket.send(marshaledJSON);
-      }
-      //console.log("Canvas initialized");
-    }
-  }
-</script>
 </html>
