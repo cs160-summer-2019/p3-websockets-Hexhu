@@ -41,6 +41,7 @@ window.onload = function() {
           console.log(arr_info);
           // Update arrival status.
           if (!(sender in arrival_info_dict)) {
+            console.log("!!!");
             addParticipant(arr_info[0], arr_info[1], arr_info[2], arr_info[3], sender, false);
             arrival_info_dict[sender] = {};
             arrival_info_dict[sender][timestamp] = arr_info;
@@ -71,24 +72,6 @@ window.onload = function() {
       addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5));
     }*/
   }
-
-
-  function updateParticipantInfo(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
-    let p_cont = document.getElementById(userid);
-    let c = p_cont.childNodes;
-    for (i = 0; i < c.length; i++)
-      console.log(userid + ": " + c[i].className);
-  }
-
-  function toggleArrivalStatusFieldVisibility() {
-    let x = document.getElementsByClassName('arrival-status-row')[0];
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
-      x.style.display = "none";
-    }
-  }
-
 }
 
 function addParticipant(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
@@ -123,18 +106,19 @@ function addParticipant(username, avatar, start_time, end_time, userid=myClientI
     p_cont.appendChild(cal_col);
       cal_col.appendChild(time_span);
   
-  if (notifyOthers) {
     let type = 'arrival_status'
     let action = 'update'
     let layload = [username, avatar, start_time, end_time]
     let marshaledJSON = '{"sender": "' + userid + '", "timestamp": "' + Math.floor(Date.now() / 1000) + '", "type": "' + type +'", "action": "' + action + '", "payload": "' + layload + '", "data_dict": "' + data_dict + '"}';
+
+  if (notifyOthers == false) {
     ws.send(marshaledJSON);
   }
 }
 
 // Called when submitting forms
 function handleArrStatusUpdate(content) {
-  console.log(content);
+  //console.log(content);
   for (i = 0; i < 2; i++) {
     addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5), notifyOthers=true);
   }
@@ -142,4 +126,23 @@ function handleArrStatusUpdate(content) {
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function updateParticipantInfo(username, avatar, start_time, end_time, userid=myClientID, notifyOthers=false) {
+  let p_cont = document.getElementById(userid);
+  let c = p_cont.childNodes;
+  for (i = 0; i < c.length; i++)
+    console.log(userid + ": " + c[i].className);
+  for (i = 0; i < 2; i++) {
+    addParticipant("Person#" + i, null, 8+getRandomInt(5), 19-getRandomInt(5), notifyOthers=true);
+  }
+}
+
+function toggleArrivalStatusFieldVisibility() {
+  let x = document.getElementsByClassName('arrival-status-row')[0];
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
 }
